@@ -1,30 +1,52 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:damda_app/main.dart';
+import 'package:damda_app/widgets/letter_card.dart';
+import 'package:damda_app/widgets/person_letter_filter_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:damda_app/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('메인 보관함의 핵심 요소를 표시한다', (tester) async {
+    tester.view.physicalSize = const Size(402, 874);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(const DamdaApp());
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    expect(find.text('총 28통'), findsOneWidget);
+    expect(find.text('2026'), findsOneWidget);
+    expect(find.text('받은 마음'), findsOneWidget);
+    expect(find.text('전한 마음'), findsOneWidget);
+    expect(find.byType(PersonLetterFilterIcon), findsOneWidget);
+    expect(find.byType(LetterCard), findsNWidgets(15));
+    expect(find.text('보관함'), findsOneWidget);
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('전한 마음 토글로 편지함을 전환한다', (tester) async {
+    tester.view.physicalSize = const Size(402, 874);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(const DamdaApp());
+    await tester.tap(find.text('전한 마음'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('총 18통'), findsOneWidget);
+    expect(find.byType(LetterCard), findsNWidgets(6));
+  });
+
+  testWidgets('연도 선택 바텀 시트를 연다', (tester) async {
+    tester.view.physicalSize = const Size(402, 874);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(const DamdaApp());
+    await tester.tap(find.text('2026'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('연도 선택'), findsOneWidget);
+    expect(find.text('2025년'), findsOneWidget);
   });
 }
